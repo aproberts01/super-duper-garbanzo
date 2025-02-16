@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://frontend-take-home-service.fetch.com.";
+const BASE_URL = "https://frontend-take-home-service.fetch.com";
 const AUTH_ROUTE = "/auth";
 const DOGS_ROUTE = "/dogs";
 const LOCATION_ROUTE = "/location";
@@ -31,7 +31,29 @@ const _login = (data = {}, config = {}) => {
 };
 
 const _logout = (data = {}, config = {}) => {
-  return apiClient.post(URL_MAP.logout, {body: data}, config);
+  return apiClient.post(URL_MAP.logout, { body: data }, config);
 };
 
-export { _login, _logout };
+const _getBreeds = (config = {}) => {
+  return apiClient.get(URL_MAP.getBreeds, { ...config, withCredentials: true });
+};
+
+const _searchDogs = (data = {}, config = {}) => {
+  return apiClient.get(URL_MAP.searchDogs, {
+    ...config,
+    withCredentials: true,
+    params: {
+      size: 12,
+    }
+  });
+};
+
+const _getDogsById = (data = {}, config = {}) => {
+    return apiClient.post(URL_MAP.getDogsById, data, {
+        ...config,
+        withCredentials: true,
+    });
+}
+
+
+export { _login, _logout, _getBreeds, _searchDogs, _getDogsById };

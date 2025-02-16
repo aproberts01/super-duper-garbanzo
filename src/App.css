@@ -39,3 +39,14 @@
 .read-the-docs {
   color: #888;
 }
+
+.card-overlay {
+  opacity: 0;
+  cursor: pointer;
+}
+
+.card-overlay:hover {
+  background: #000;
+  transition: opacity .25s ease-in-out .0s;
+  opacity: 0.3;
+}
