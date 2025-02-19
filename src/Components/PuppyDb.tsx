@@ -1,33 +1,17 @@
-import { useEffect, useState } from "react";
-import { _searchDogs, _getDogsById, _getBreeds } from "../apiClient";
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
 import InputGroup from "react-bootstrap/InputGroup";
 import Spinner from "react-bootstrap/Spinner";
-import Button from "react-bootstrap/Button";
+// import Button from "react-bootstrap/Button";
+import Pagination from "react-bootstrap/Pagination";
+import { useCustomFetch } from "../customHooks";
 
 const PuppyDb = () => {
-  const [data, setData] = useState([]);
-  const [breeds, setBreeds] = useState([]);
+  const { state, handlePageChange } = useCustomFetch();
 
-  useEffect(() => {
-    async function getBreeds() {
-      let response = await _searchDogs();
-      const breeds = await _getBreeds();
-      const { data: breedData } = breeds;
-      const { data } = response;
-      response = await _getDogsById(data.resultIds);
-      setBreeds(breedData);
-      setData(response.data);
-    }
-    if (!data || data.length === 0) {
-      getBreeds();
-    }
-  }, [data]);
-
-  if (!data || data.length === 0) {
+  if (!state.dogs || state.dogs.length === 0) {
     return (
       <Spinner animation="grow" variant="info">
         <span className="visually-hidden">Loading...</span>
@@ -47,7 +31,7 @@ const PuppyDb = () => {
           />
           <Form.Select aria-label="Default select example">
             <option>Filter by breed</option>
-            {breeds.map((breed) => (
+            {state.breeds.map((breed: string) => (
               <option value={breed} key={breed}>
                 {breed}
               </option>
@@ -56,7 +40,7 @@ const PuppyDb = () => {
         </InputGroup>
       </div>
       <Row xs={1} md={4} className="g-4">
-        {data.map(({ img, name, age, breed, zip_code }) => (
+        {state.dogs.map(({ img, name, age, breed, zip_code }) => (
           <Col key={name}>
             <Card className="p-0 overflow-hidden">
               <Card.Img
@@ -82,6 +66,42 @@ const PuppyDb = () => {
           </Col>
         ))}
       </Row>
+      <div className="my-4 d-flex justify-content-center">
+        <Pagination>
+          <Pagination.Prev
+            disabled={state.currentPage === 1}
+            onClick={() => handlePageChange({ direction: "prev" })}
+          />
+          {state.paginationArray.map((page) => (
+            <Pagination.Item
+              onClick={() => handlePageChange({ page })}
+              active={state.currentPage === page}
+              key={page}
+            >
+              {page}
+            </Pagination.Item>
+          ))}
+          <Pagination.Ellipsis />
+          <Pagination.Item
+            active={
+              state.currentPage ===
+              Math.ceil(state.data.total / state.resultsPerPage)
+            }
+            onClick={() => handlePageChange({
+              page: Math.ceil(state.data.total / state.resultsPerPage),
+            })}
+          >
+            {Math.ceil(state.data.total / state.resultsPerPage)}
+          </Pagination.Item>
+          <Pagination.Next
+            disabled={
+              state.currentPage ===
+              Math.ceil(state.data.total / state.resultsPerPage)
+            }
+            onClick={() => handlePageChange({ direction: "next" })}
+          />
+        </Pagination>
+      </div>
     </div>
   );
 };

@@ -23,6 +23,11 @@ const apiClient = axios.create({
   },
 });
 
+interface SearchParams {
+  next?: string;
+  prev?: string;
+}
+
 const _login = (data = {}, config = {}) => {
   return apiClient.post(URL_MAP.login, data, {
     ...config,
@@ -38,8 +43,9 @@ const _getBreeds = (config = {}) => {
   return apiClient.get(URL_MAP.getBreeds, { ...config, withCredentials: true });
 };
 
-const _searchDogs = (data = {}, config = {}) => {
-  return apiClient.get(URL_MAP.searchDogs, {
+const _searchDogs = (data: SearchParams, config = {}) => {
+  const url = data.next || data.prev || URL_MAP.searchDogs;
+  return apiClient.get(url, {
     ...config,
     withCredentials: true,
     params: {
