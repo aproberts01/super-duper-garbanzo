@@ -85,34 +85,58 @@ export function reducer(state: StateType, action: ActionType): StateType {
         breeds: action.payload,
       };
     case "HANDLE_PAGE_CHANGE": {
-      //todo: refactor this to be more readable
-      const isNext = action.payload.direction === "next";
-      const newPage = isNext ? state.currentPage + 1 : state.currentPage - 1;
+      const { payload }: { payload: PageParams } = action || {};
+      const { direction, page }: { direction?: string; page?: number } =
+        payload || {};
+      const {
+        currentPage,
+        paginationLength,
+        paginationStartNumber,
+        paginationArray,
+      } = state || {};
+
+      const isNext = direction === "next";
       const isNextPaginationSet = isNext
-        ? state.currentPage % state.paginationLength === 0
-        : (state.currentPage - 1) % state.paginationLength === 0;
-      const pageChange = (i: number) =>
-        i +
-        (isNext
-          ? state.paginationStartNumber + state.paginationLength
-          : state.paginationStartNumber - state.paginationLength);
+        ? currentPage % paginationLength === 0
+        : (currentPage - 1) % paginationLength === 0;
+
+      //handle page change
+      let newPage = currentPage;
+      if (direction) {
+        newPage = direction === "next" ? currentPage + 1 : currentPage - 1;
+      } else if (page) {
+        newPage = page;
+      }
+
+      //handle set of pagination controls
+      const handlePaginationArray = (): number[] => {
+        if (isNextPaginationSet && !page) {
+          return Array.from({ length: paginationLength }, (_, i) => {
+            if (direction === "next") {
+              return i + paginationStartNumber + paginationLength;
+            }
+            return i + paginationStartNumber - paginationLength;
+          });
+        }
+        return paginationArray;
+      };
+
+      //handle first number in pagination set
+      const handlePaginationStartNumber = (): number => {
+        if (isNextPaginationSet && !page) {
+          if (direction === "next") {
+            return paginationStartNumber + paginationLength;
+          }
+          return paginationStartNumber - paginationLength;
+        }
+        return paginationStartNumber;
+      };
+
       return {
         ...state,
-        currentPage: action.payload.direction
-          ? newPage
-          : action.payload.page ?? state.currentPage,
-        paginationArray:
-          isNextPaginationSet && !action.payload.page
-            ? Array.from({ length: state.paginationLength }, (_, i) =>
-                pageChange(i)
-              )
-            : state.paginationArray,
-        paginationStartNumber:
-          isNextPaginationSet && !action.payload.page
-            ? isNext
-              ? state.paginationStartNumber + state.paginationLength
-              : state.paginationStartNumber - state.paginationLength
-            : state.paginationStartNumber,
+        currentPage: newPage,
+        paginationArray: handlePaginationArray(),
+        paginationStartNumber: handlePaginationStartNumber(),
       };
     }
     default:
