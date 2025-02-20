@@ -24,6 +24,7 @@ interface StateType {
   paginationArray: number[];
   paginationStartNumber: number;
   paginationLength: number;
+  lastPage: number;
 }
 
 interface PageParams {
@@ -58,6 +59,7 @@ export const initialState: StateType = {
   ),
   paginationStartNumber: 1,
   paginationLength: INITIAL_PAGINATION_LENGTH,
+  lastPage: 0,
 };
 
 // Reducer function
@@ -73,6 +75,7 @@ export function reducer(state: StateType, action: ActionType): StateType {
           resultIds: action.payload.resultIds,
           total: action.payload.total,
         },
+        lastPage: Math.ceil(action.payload.total / state.resultsPerPage),
       };
     case "GET_DOGS_BY_ID":
       return {
@@ -93,41 +96,67 @@ export function reducer(state: StateType, action: ActionType): StateType {
         paginationLength,
         paginationStartNumber,
         paginationArray,
+        lastPage,
       } = state || {};
 
       const isNext = direction === "next";
-      const isNextPaginationSet = isNext
-        ? currentPage % paginationLength === 0
-        : (currentPage - 1) % paginationLength === 0;
+      const isLastPage = page === lastPage;
+      const isFirstPage = page === 1;
+      const newPage = page ? page : currentPage;
 
-      //handle page change
-      let newPage = currentPage;
-      if (direction) {
-        newPage = direction === "next" ? currentPage + 1 : currentPage - 1;
-      } else if (page) {
-        newPage = page;
-      }
+      const isNextPaginationSet = () => {
+        if (direction) {
+          if (isNext) {
+            console.log(page, paginationArray[paginationLength - 1] + 1)
+            return page === paginationArray[paginationLength - 1] + 1;
+          }
+          return page === paginationArray[0] - 1;
+        }
+        return false;
+      };
 
       //handle set of pagination controls
       const handlePaginationArray = (): number[] => {
-        if (isNextPaginationSet && !page) {
+        if (direction && isNextPaginationSet()) {
           return Array.from({ length: paginationLength }, (_, i) => {
-            if (direction === "next") {
+            if (isNext) {
               return i + paginationStartNumber + paginationLength;
             }
             return i + paginationStartNumber - paginationLength;
           });
+        }
+
+        if (isLastPage) {
+          return Array.from(
+            { length: paginationLength },
+            (_, i) => i + (lastPage + 1) - paginationLength
+          );
+        }
+
+        if (isFirstPage) {
+          return Array.from(
+            { length: paginationLength },
+            (_, i) => i + 1
+          );
         }
         return paginationArray;
       };
 
       //handle first number in pagination set
       const handlePaginationStartNumber = (): number => {
-        if (isNextPaginationSet && !page) {
+        if (direction && isNextPaginationSet()) {
           if (direction === "next") {
             return paginationStartNumber + paginationLength;
           }
           return paginationStartNumber - paginationLength;
+        }
+
+        if (isLastPage) {
+          return lastPage + 1 - paginationLength;
+        }
+
+        if (isFirstPage) {
+          return 1
         }
         return paginationStartNumber;
       };

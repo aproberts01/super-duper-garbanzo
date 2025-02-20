@@ -70,8 +70,23 @@ const PuppyDb = () => {
         <Pagination>
           <Pagination.Prev
             disabled={state.currentPage === 1}
-            onClick={() => handlePageChange({ direction: "prev" })}
+            onClick={() => handlePageChange({ direction: "prev", page: state.currentPage - 1 })}
           />
+          {state.paginationStartNumber ===
+            (state.lastPage + 1) - state.paginationArray.length && (
+            <>
+              <Pagination.Item
+                onClick={() =>
+                  handlePageChange({
+                    page: 1,
+                  })
+                }
+              >
+                1
+              </Pagination.Item>
+              <Pagination.Ellipsis />
+            </>
+          )}
           {state.paginationArray.map((page) => (
             <Pagination.Item
               onClick={() => handlePageChange({ page })}
@@ -81,24 +96,25 @@ const PuppyDb = () => {
               {page}
             </Pagination.Item>
           ))}
-          <Pagination.Ellipsis />
-          <Pagination.Item
-            active={
-              state.currentPage ===
-              Math.ceil(state.data.total / state.resultsPerPage)
-            }
-            onClick={() => handlePageChange({
-              page: Math.ceil(state.data.total / state.resultsPerPage),
-            })}
-          >
-            {Math.ceil(state.data.total / state.resultsPerPage)}
-          </Pagination.Item>
+          {state.paginationStartNumber !==
+            (state.lastPage + 1) - state.paginationArray.length && (
+            <>
+              <Pagination.Ellipsis />
+              <Pagination.Item
+                active={state.currentPage === state.lastPage}
+                onClick={() =>
+                  handlePageChange({
+                    page: state.lastPage,
+                  })
+                }
+              >
+                {state.lastPage}
+              </Pagination.Item>
+            </>
+          )}
           <Pagination.Next
-            disabled={
-              state.currentPage ===
-              Math.ceil(state.data.total / state.resultsPerPage)
-            }
-            onClick={() => handlePageChange({ direction: "next" })}
+            disabled={state.currentPage === state.lastPage}
+            onClick={() => handlePageChange({ direction: "next", page: state.currentPage + 1 })}
           />
         </Pagination>
       </div>
