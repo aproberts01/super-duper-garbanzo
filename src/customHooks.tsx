@@ -5,8 +5,8 @@ import { reducer, initialState } from "./reducer";
 export const useCustomFetch = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  const getDogData = useCallback(async (nextUrl: string): Promise<void> => {
-    const searchDogsResponse = await _searchDogs({ next: nextUrl });
+  const getDogData = useCallback(async ({url, breeds}: {url: string, breeds: string[]}): Promise<void> => {
+    const searchDogsResponse = await _searchDogs({ url, breeds });
     const dogsData = await _getDogsById(searchDogsResponse.data.resultIds);
     dispatch({ type: "SEARCH_DOGS", payload: searchDogsResponse.data });
     dispatch({ type: "GET_DOGS_BY_ID", payload: dogsData.data });
@@ -19,13 +19,19 @@ export const useCustomFetch = () => {
 
   useEffect(() => {
     if (!state.dogs || state.dogs.length === 0) {
-      getDogData("");
+      getDogData({url: ""});
     }
 
     if (!state.breeds || state.breeds.length === 0) {
       getBreeds();
     }
-  }, [state.dogs, state.breeds, getDogData, getBreeds]);
+  }, [state.dogs, state.breeds, state.selectedBreeds, getDogData, getBreeds]);
+
+  useEffect(() => {
+    if (state.selectedBreeds.length > 0) {
+      getDogData({url: "", breeds: state.selectedBreeds})
+    }
+  }, [state.selectedBreeds, getDogData])
 
   const handlePageChange = ({
     direction,
@@ -45,11 +51,19 @@ export const useCustomFetch = () => {
       type: "HANDLE_PAGE_CHANGE",
       payload: { ...(direction && { direction }), ...(page && { page }) },
     });
-    getDogData(url || "");
+    getDogData({url: url || "", breeds: state.selectedBreeds});
   };
+
+  const handleFilterBreeds = (breed: string) => {
+    dispatch({
+      type: "FILTER_BREEDS",
+      payload: breed,
+    });  
+  }
 
   return {
     state,
     handlePageChange,
+    handleFilterBreeds,
   };
 };

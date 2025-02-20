@@ -1,15 +1,14 @@
 import Card from "react-bootstrap/Card";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
-import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 import Spinner from "react-bootstrap/Spinner";
-// import Button from "react-bootstrap/Button";
+import Button from "react-bootstrap/Button";
 import Pagination from "react-bootstrap/Pagination";
 import { useCustomFetch } from "../customHooks";
+import Dropdown from "react-bootstrap/Dropdown";
 
 const PuppyDb = () => {
-  const { state, handlePageChange } = useCustomFetch();
+  const { state, handlePageChange, handleFilterBreeds } = useCustomFetch();
 
   if (!state.dogs || state.dogs.length === 0) {
     return (
@@ -23,21 +22,22 @@ const PuppyDb = () => {
     <div>
       <h1 className="text-center">Puppy Adoption Database</h1>
       <div className="my-4">
-        <InputGroup size="lg">
-          <Form.Control
-            aria-label="Large"
-            aria-describedby="inputGroup-sizing-sm"
-            placeholder="Search by name"
-          />
-          <Form.Select aria-label="Default select example">
-            <option>Filter by breed</option>
+        <Dropdown>
+          <Dropdown.Toggle size="lg" variant="success" id="dropdown-basic">
+            Filter by breed
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
             {state.breeds.map((breed: string) => (
-              <option value={breed} key={breed}>
+              <Dropdown.Item
+                onClick={() => handleFilterBreeds(breed)}
+                active={state.selectedBreeds.includes(breed)}
+                key={breed}
+              >
                 {breed}
-              </option>
+              </Dropdown.Item>
             ))}
-          </Form.Select>
-        </InputGroup>
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
       <Row xs={1} md={4} className="g-4">
         {state.dogs.map(({ img, name, age, breed, zip_code }) => (
@@ -50,7 +50,7 @@ const PuppyDb = () => {
                 src={img}
               />
               <Card.ImgOverlay className="card-overlay text-center align-middle">
-                {/* <Button variant="primary">Add to favorites</Button> */}
+                <Button className="favorites-button" variant="primary">Add to favorites ♡</Button>
               </Card.ImgOverlay>
               <Card.Body>
                 <Card.Title>{name}</Card.Title>
@@ -58,8 +58,9 @@ const PuppyDb = () => {
               </Card.Body>
               <Card.Footer>
                 <small className="text-muted">
-                  <strong>Age:</strong> {age} ˗ˏˋ ♡ ˎˊ˗{" "}
-                  <strong>Location:</strong> {zip_code}{" "}
+                  <strong>Age:</strong> {age} <br/>
+                  <strong>Location:</strong>{" "}
+                  {zip_code}
                 </small>
               </Card.Footer>
             </Card>
@@ -70,10 +71,15 @@ const PuppyDb = () => {
         <Pagination>
           <Pagination.Prev
             disabled={state.currentPage === 1}
-            onClick={() => handlePageChange({ direction: "prev", page: state.currentPage - 1 })}
+            onClick={() =>
+              handlePageChange({
+                direction: "prev",
+                page: state.currentPage - 1,
+              })
+            }
           />
           {state.paginationStartNumber ===
-            (state.lastPage + 1) - state.paginationArray.length && (
+            state.lastPage + 1 - state.paginationArray.length && (
             <>
               <Pagination.Item
                 onClick={() =>
@@ -97,7 +103,7 @@ const PuppyDb = () => {
             </Pagination.Item>
           ))}
           {state.paginationStartNumber !==
-            (state.lastPage + 1) - state.paginationArray.length && (
+            state.lastPage + 1 - state.paginationArray.length && (
             <>
               <Pagination.Ellipsis />
               <Pagination.Item
@@ -114,7 +120,12 @@ const PuppyDb = () => {
           )}
           <Pagination.Next
             disabled={state.currentPage === state.lastPage}
-            onClick={() => handlePageChange({ direction: "next", page: state.currentPage + 1 })}
+            onClick={() =>
+              handlePageChange({
+                direction: "next",
+                page: state.currentPage + 1,
+              })
+            }
           />
         </Pagination>
       </div>

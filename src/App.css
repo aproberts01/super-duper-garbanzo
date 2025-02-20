@@ -40,13 +40,27 @@
   color: #888;
 }
 
-.card-overlay {
+.favorites-button {
   opacity: 0;
-  cursor: pointer;
+  margin-top: 30%;
 }
 
-.card-overlay:hover {
-  background: #000;
-  transition: opacity .25s ease-in-out .0s;
-  opacity: 0.3;
+.card-overlay {
+  background-color: rgba(0, 0, 0, 0);
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, .3);
+    transition: background-color .25s ease-in-out .0s;
+    
+    > .favorites-button {
+      opacity: 1;
+    }
+  }
+}
+
+.dropdown-menu {
+  overflow: hidden;
+  overflow-y: auto;
+  max-height: calc(80vh - 150px);
 }

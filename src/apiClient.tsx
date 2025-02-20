@@ -24,8 +24,8 @@ const apiClient = axios.create({
 });
 
 interface SearchParams {
-  next?: string;
-  prev?: string;
+  url?: string,
+  breeds?: string[],
 }
 
 const _login = (data = {}, config = {}) => {
@@ -44,12 +44,15 @@ const _getBreeds = (config = {}) => {
 };
 
 const _searchDogs = (data: SearchParams, config = {}) => {
-  const url = data.next || data.prev || URL_MAP.searchDogs;
+  const url = data.url || URL_MAP.searchDogs;
+  const breeds = data.breeds
   return apiClient.get(url, {
     ...config,
     withCredentials: true,
     params: {
       size: 12,
+      sort: "breed:asc",
+      ...(breeds && { breeds }),
     }
   });
 };

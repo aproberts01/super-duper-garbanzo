@@ -25,6 +25,7 @@ interface StateType {
   paginationStartNumber: number;
   paginationLength: number;
   lastPage: number;
+  selectedBreeds: string[];
 }
 
 interface PageParams {
@@ -37,7 +38,8 @@ type ActionType =
   | { type: "SEARCH_DOGS"; payload: DataType }
   | { type: "GET_DOGS_BY_ID"; payload: DogsType[] }
   | { type: "ADD_BREEDS"; payload: string[] }
-  | { type: "HANDLE_PAGE_CHANGE"; payload: PageParams };
+  | { type: "HANDLE_PAGE_CHANGE"; payload: PageParams }
+  | { type: "FILTER_BREEDS"; payload: string };
 
 const INITIAL_PAGINATION_LENGTH = 7;
 
@@ -60,6 +62,7 @@ export const initialState: StateType = {
   paginationStartNumber: 1,
   paginationLength: INITIAL_PAGINATION_LENGTH,
   lastPage: 0,
+  selectedBreeds: [],
 };
 
 // Reducer function
@@ -167,6 +170,24 @@ export function reducer(state: StateType, action: ActionType): StateType {
         paginationArray: handlePaginationArray(),
         paginationStartNumber: handlePaginationStartNumber(),
       };
+    }
+    case 'FILTER_BREEDS': {
+      let breeds;
+      if (state.selectedBreeds.includes(action.payload)) {
+        breeds = [...state.selectedBreeds].filter((breed) => breed !== action.payload)
+      } else {
+        breeds = [...state.selectedBreeds, action.payload]
+      }
+      return {
+        ...state,
+        selectedBreeds: breeds,
+        currentPage: 1,
+        paginationArray: Array.from(
+          { length: INITIAL_PAGINATION_LENGTH },
+          (_, i) => i + 1
+        ),
+        paginationStartNumber: 1,
+      }
     }
     default:
       return state;
