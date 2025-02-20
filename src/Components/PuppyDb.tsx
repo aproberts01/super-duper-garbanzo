@@ -50,18 +50,27 @@ const PuppyDb = () => {
                 src={img}
               />
               <Card.ImgOverlay className="card-overlay text-center align-middle">
-                <Button className="favorites-button" variant="primary">Add to favorites ♡</Button>
+                <Button className="favorites-button" variant="primary">
+                  Add to favorites ♡
+                </Button>
               </Card.ImgOverlay>
               <Card.Body>
                 <Card.Title>{name}</Card.Title>
                 <Card.Subtitle>{breed}</Card.Subtitle>
               </Card.Body>
               <Card.Footer>
-                <small className="text-muted">
-                  <strong>Age:</strong> {age} <br/>
-                  <strong>Location:</strong>{" "}
-                  {zip_code}
-                </small>
+                <Row>
+                  <Col>
+                    <small className="text-muted">
+                      <strong>Age:</strong> {age}
+                    </small>
+                  </Col>
+                  <Col>
+                    <small className="text-muted">
+                      <strong>Location:</strong> {zip_code}
+                    </small>
+                  </Col>
+                </Row>
               </Card.Footer>
             </Card>
           </Col>
