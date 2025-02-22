@@ -28,7 +28,7 @@ const PuppyDb = () => {
         handleSort={handleSort}
         handleFilterBreeds={handleFilterBreeds}
       />
-      <Row xs={1} md={4} className="g-4">
+      <Row xs={1} sm={2} md={4} className="g-4">
         {state.dogs.map(({ img, name, age, breed, zip_code }) => (
           <DogCard
             img={img}

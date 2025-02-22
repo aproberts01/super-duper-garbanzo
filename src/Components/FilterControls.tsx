@@ -23,8 +23,8 @@ const FilterControls: React.FC<FilterControlProps> = ({
   return (
     <div className="my-4">
       <Row>
-        <Col md={2}>
-          <Dropdown>
+        <Col lg={2}>
+          <Dropdown className="mb-1">
             <Dropdown.Toggle size="lg" variant="secondary" id="dropdown-basic">
               Filter by breed
             </Dropdown.Toggle>

@@ -4,25 +4,6 @@
   padding: 3rem 2rem;
 }
 
-.favorites-button {
-  opacity: 0;
-  margin-top: 30%;
-}
-
-.card-overlay {
-  background-color: rgba(0, 0, 0, 0);
-  cursor: pointer;
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s ease-in-out 0s;
-
-    > .favorites-button {
-      opacity: 1;
-    }
-  }
-}
-
 .dropdown-menu {
   overflow: hidden;
   overflow-y: auto;
