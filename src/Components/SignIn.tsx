@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { _login } from "../apiClient";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 type Errors = {
   [key: string]: { message: string };
@@ -64,13 +64,13 @@ const SignIn: React.FC = () => {
     _login({ email: inputValues.email, name: inputValues.name })
       .then((response) => {
         if (response.status === 200) {
-            navigate('/db');
+          navigate("/db");
         } else {
-            throw new Error(response.statusText);
+          throw new Error(response.statusText);
         }
       })
       .catch((error) => {
-        console.log('error:', error);
+        console.log("error:", error);
       });
   };
 
