@@ -63,7 +63,6 @@ export function reducer(state: StateType, action: ActionType): StateType {
       const isNextPaginationSet = () => {
         if (direction) {
           if (isNext) {
-            console.log(page, paginationArray[paginationLength - 1] + 1)
             return page === paginationArray[paginationLength - 1] + 1;
           }
           return page === paginationArray[0] - 1;
