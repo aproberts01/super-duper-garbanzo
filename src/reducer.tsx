@@ -1,45 +1,4 @@
-// Define state types
-interface DataType {
-  resultIds: string[];
-  total: number;
-  next?: string;
-  prev?: string;
-}
-
-interface DogsType {
-  img: string;
-  name: string;
-  age: number;
-  breed: string;
-  zip_code: string;
-  id: string;
-}
-
-interface StateType {
-  data: DataType;
-  breeds: string[];
-  dogs: DogsType[];
-  resultsPerPage: number;
-  currentPage: number;
-  paginationArray: number[];
-  paginationStartNumber: number;
-  paginationLength: number;
-  lastPage: number;
-  selectedBreeds: string[];
-}
-
-interface PageParams {
-  direction?: string;
-  page?: number;
-}
-
-// Define action types
-type ActionType =
-  | { type: "SEARCH_DOGS"; payload: DataType }
-  | { type: "GET_DOGS_BY_ID"; payload: DogsType[] }
-  | { type: "ADD_BREEDS"; payload: string[] }
-  | { type: "HANDLE_PAGE_CHANGE"; payload: PageParams }
-  | { type: "FILTER_BREEDS"; payload: string };
+import { StateType, ActionType, DataType, DogsType, PageParams } from "./types";
 
 const INITIAL_PAGINATION_LENGTH = 7;
 
@@ -63,28 +22,22 @@ export const initialState: StateType = {
   paginationLength: INITIAL_PAGINATION_LENGTH,
   lastPage: 0,
   selectedBreeds: [],
+  sortField: 'asc',
 };
 
 // Reducer function
 export function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
-    case "SEARCH_DOGS":
+    case "SEARCH_DOGS": {
+      const { searchData, dogsData } : { searchData: DataType, dogsData: DogsType[] } = action.payload || {};
+      const { total } = searchData
       return {
         ...state,
-        data: {
-          ...state.data,
-          next: action.payload.next,
-          prev: action.payload.prev,
-          resultIds: action.payload.resultIds,
-          total: action.payload.total,
-        },
-        lastPage: Math.ceil(action.payload.total / state.resultsPerPage),
+        data: searchData,
+        dogs: dogsData,
+        lastPage: Math.ceil(total / state.resultsPerPage),
       };
-    case "GET_DOGS_BY_ID":
-      return {
-        ...state,
-        dogs: action.payload,
-      };
+    }
     case "ADD_BREEDS":
       return {
         ...state,
@@ -181,6 +134,18 @@ export function reducer(state: StateType, action: ActionType): StateType {
       return {
         ...state,
         selectedBreeds: breeds,
+        currentPage: 1,
+        paginationArray: Array.from(
+          { length: INITIAL_PAGINATION_LENGTH },
+          (_, i) => i + 1
+        ),
+        paginationStartNumber: 1,
+      }
+    }
+    case 'HANDLE_SORT': {
+      return {
+        ...state,
+        sortField: state.sortField === 'asc' ? 'desc' : 'asc',
         currentPage: 1,
         paginationArray: Array.from(
           { length: INITIAL_PAGINATION_LENGTH },

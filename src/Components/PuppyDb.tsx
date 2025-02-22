@@ -6,9 +6,14 @@ import Button from "react-bootstrap/Button";
 import Pagination from "react-bootstrap/Pagination";
 import { useCustomFetch } from "../customHooks";
 import Dropdown from "react-bootstrap/Dropdown";
+import { SortAlphaDown, SortAlphaUp, Github, Linkedin, Envelope, Geo } from "react-bootstrap-icons";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 
 const PuppyDb = () => {
-  const { state, handlePageChange, handleFilterBreeds } = useCustomFetch();
+  const { state, handlePageChange, handleFilterBreeds, handleSort } =
+    useCustomFetch();
 
   if (!state.dogs || state.dogs.length === 0) {
     return (
@@ -20,24 +25,52 @@ const PuppyDb = () => {
 
   return (
     <div>
-      <h1 className="text-center">Puppy Adoption Database</h1>
+      <Navbar fixed="top" bg="primary">
+        <Container>
+          <Navbar.Brand href="/">Ali's Fetch Adoption Search</Navbar.Brand>
+          <Nav className="me-auto">
+            <Nav.Link href="#home"><Github/> Github</Nav.Link>
+            <Nav.Link href="#features"><Linkedin/> LinkedIn</Nav.Link>
+            <Nav.Link href="#pricing"><Envelope/> Email</Nav.Link>
+          </Nav>
+        </Container>
+      </Navbar>
       <div className="my-4">
-        <Dropdown>
-          <Dropdown.Toggle size="lg" variant="success" id="dropdown-basic">
-            Filter by breed
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {state.breeds.map((breed: string) => (
-              <Dropdown.Item
-                onClick={() => handleFilterBreeds(breed)}
-                active={state.selectedBreeds.includes(breed)}
-                key={breed}
+        <Row>
+          <Col md={2}>
+            <Dropdown>
+              <Dropdown.Toggle
+                size="lg"
+                variant="secondary"
+                id="dropdown-basic"
               >
-                {breed}
-              </Dropdown.Item>
-            ))}
-          </Dropdown.Menu>
-        </Dropdown>
+                Filter by breed
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {state.breeds.map((breed: string) => (
+                  <Dropdown.Item
+                    onClick={() => handleFilterBreeds(breed)}
+                    active={state.selectedBreeds.includes(breed)}
+                    key={breed}
+                  >
+                    {breed}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Col>
+          <Col>
+            {state.sortField === "desc" ? (
+              <Button onClick={handleSort} variant="secondary" size="lg">
+                Sort Desc <SortAlphaDown />
+              </Button>
+            ) : (
+              <Button onClick={handleSort} variant="secondary" size="lg">
+                Sort Asc <SortAlphaUp />
+              </Button>
+            )}
+          </Col>
+        </Row>
       </div>
       <Row xs={1} md={4} className="g-4">
         {state.dogs.map(({ img, name, age, breed, zip_code }) => (
@@ -49,11 +82,11 @@ const PuppyDb = () => {
                 variant="left"
                 src={img}
               />
-              <Card.ImgOverlay className="card-overlay text-center align-middle">
+              {/* <Card.ImgOverlay className="card-overlay text-center align-middle">
                 <Button className="favorites-button" variant="primary">
                   Add to favorites ♡
                 </Button>
-              </Card.ImgOverlay>
+              </Card.ImgOverlay> */}
               <Card.Body>
                 <Card.Title>{name}</Card.Title>
                 <Card.Subtitle>{breed}</Card.Subtitle>
