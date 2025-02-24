@@ -64,7 +64,7 @@ const SignIn: React.FC = () => {
     _login({ email: inputValues.email, name: inputValues.name })
       .then((response) => {
         if (response.status === 200) {
-          navigate("/db");
+          navigate("/super-duper-garbanzo/search");
         } else {
           throw new Error(response.statusText);
         }
