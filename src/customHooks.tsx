@@ -92,7 +92,7 @@ export const useCustomFetch = () => {
   const getBreeds = useCallback(async (): Promise<void> => {
     try {
       const breeds = await _getBreeds();
-      dispatch({ type: "ADD_BREEDS", payload: breeds.data });
+      dispatch({ type: "ADD_BREEDS", payload: breeds?.data });
     } catch (error) {
       console.error("Failed to fetch breeds:", error);
     }

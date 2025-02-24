@@ -17,7 +17,7 @@ const URL_MAP = {
   searchLocations: `${LOCATION_ROUTE}/search`,
 };
 
-const apiClient = axios.create({
+export const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: {
     "Content-Type": "application/json",
@@ -85,7 +85,7 @@ const _fetchDogsById = (data = {}, config = {}) => {
 };
 
 const _fetchLocationsAndTransform = (data = [], config = {}) => {
-  if (data) {
+  if (data?.length > 0) {
     const zips = data.map(({ zip_code }) => zip_code);
     return apiClient
       .post(URL_MAP.fetchLocations, zips, {
@@ -118,7 +118,7 @@ const _getDogData = async ({ url, breeds, sortField }: SearchParams) => {
   let dogs, searchDogsResponse;
   try {
     searchDogsResponse = await _searchDogs({ url, breeds, sortField });
-    dogs = await _fetchDogsById(searchDogsResponse.data.resultIds);
+    dogs = await _fetchDogsById(searchDogsResponse?.data?.resultIds);
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(err.message);
