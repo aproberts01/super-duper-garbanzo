@@ -9,6 +9,8 @@ export interface DataType {
 export interface DogsType {
   img: string;
   name: string;
+  city?: string,
+  state?: string
   age: number;
   breed: string;
   zip_code: string;

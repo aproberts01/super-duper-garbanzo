@@ -9,7 +9,9 @@ type DogCardProps = {
   breed: string;
   age: number;
   zipCode: string;
-}
+  city?: string;
+  state?: string;
+};
 
 const DogCard: React.FC<DogCardProps> = ({
   img,
@@ -17,6 +19,8 @@ const DogCard: React.FC<DogCardProps> = ({
   breed,
   age,
   zipCode,
+  city,
+  state,
 }) => {
   return (
     <Col key={name}>
@@ -35,12 +39,12 @@ const DogCard: React.FC<DogCardProps> = ({
           <Row>
             <Col>
               <small className="text-muted">
-                <strong>Age:</strong> {age}
+                <strong>Age:</strong> {age === 0 ? "< 1" : age}
               </small>
             </Col>
-            <Col>
-              <small className="text-muted">
-                <strong>Location:</strong> {zipCode}
+            <Col style={{ textAlign: 'end' }}>
+              <small className="text-muted" style={{ whiteSpace:'nowrap' }}>
+                {city && state ? `  ${city}, ${state}` : zipCode}
               </small>
             </Col>
           </Row>

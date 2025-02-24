@@ -1,9 +1,10 @@
 import axios from "axios";
+import { DogsType } from "./types";
 
 const BASE_URL = "https://frontend-take-home-service.fetch.com";
 const AUTH_ROUTE = "/auth";
 const DOGS_ROUTE = "/dogs";
-const LOCATION_ROUTE = "/location";
+const LOCATION_ROUTE = "/locations";
 
 const URL_MAP = {
   login: `${AUTH_ROUTE}/login`,
@@ -12,7 +13,7 @@ const URL_MAP = {
   getBreeds: `${DOGS_ROUTE}/breeds`,
   searchDogs: `${DOGS_ROUTE}/search`,
   getUserMatch: `${DOGS_ROUTE}/match`,
-  getLocations: `${LOCATION_ROUTE}`,
+  fetchLocations: `${LOCATION_ROUTE}`,
   searchLocations: `${LOCATION_ROUTE}/search`,
 };
 
@@ -57,7 +58,7 @@ const _getBreeds = (config = {}) => {
 const _searchDogs = (data: SearchParams, config = {}) => {
   const url = data.url || URL_MAP.searchDogs;
   const breeds = data.breeds;
-  const sortField = data.sortField || 'asc'
+  const sortField = data.sortField || "asc";
   return apiClient.get(url, {
     ...config,
     withCredentials: true,
@@ -83,6 +84,26 @@ const _fetchDogsById = (data = {}, config = {}) => {
   });
 };
 
+const _fetchLocationsAndTransform = (data = [], config = {}) => {
+  if (data) {
+    const zips = data.map(({ zip_code }) => zip_code);
+    return apiClient
+      .post(URL_MAP.fetchLocations, zips, {
+        ...config,
+        withCredentials: true,
+      })
+      .then(({ data: locations }) => {
+        return data.map((dog, i): DogsType[] => {
+          return {
+            ...(dog as object),
+            ...(locations[i].city && { city: locations[i].city }),
+            ...(locations[i].state && { state: locations[i].state }),
+          };
+        });
+      });
+  }
+};
+
 /**
  * Fetches dog data based on the provided search parameters.
  *
@@ -93,11 +114,7 @@ const _fetchDogsById = (data = {}, config = {}) => {
  * @returns {Promise<{dogs: any, searchDogsResponse: any}>} An object containing the fetched dog data and the search response.
  * @throws {Error} Throws an error if the fetch operation fails.
  */
-const _getDogData = async ({
-  url,
-  breeds,
-  sortField,
-}: SearchParams) => {
+const _getDogData = async ({ url, breeds, sortField }: SearchParams) => {
   let dogs, searchDogsResponse;
   try {
     searchDogsResponse = await _searchDogs({ url, breeds, sortField });
@@ -111,7 +128,8 @@ const _getDogData = async ({
   } finally {
     const searchResponse = searchDogsResponse ? searchDogsResponse.data : {};
     const dogsData = dogs ? dogs.data : {};
-    dogs = dogsData;
+    const transformed = await _fetchLocationsAndTransform(dogsData);
+    dogs = transformed || dogsData;
     searchDogsResponse = searchResponse;
   }
   return {
@@ -120,4 +138,11 @@ const _getDogData = async ({
   };
 };
 
-export { _login, _logout, _getBreeds, _searchDogs, _fetchDogsById, _getDogData };
+export {
+  _login,
+  _logout,
+  _getBreeds,
+  _searchDogs,
+  _fetchDogsById,
+  _getDogData,
+};
