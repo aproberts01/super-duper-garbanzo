@@ -30,7 +30,7 @@ const PuppyDb = () => {
     error => {
       const { response } = error;
       if (response && response.status === 401) {
-        navigate('/');
+        navigate('/super-duper-garbanzo');
       }
       return Promise.reject(error);
     }

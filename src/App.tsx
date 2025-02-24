@@ -12,8 +12,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<SignIn/>}/>
-        <Route path="/db" element={<PuppyDb/>}/>
+        <Route path="/super-duper-garbanzo" element={<SignIn/>}/>
+        <Route path="/super-duper-garbanzo/search" element={<PuppyDb/>}/>
       </Routes>
     </Router>
   )
