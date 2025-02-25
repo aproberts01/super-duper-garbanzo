@@ -96,8 +96,8 @@ const _fetchLocationsAndTransform = (data = [], config = {}) => {
         return data.map((dog, i): DogsType[] => {
           return {
             ...(dog as object),
-            ...(locations[i].city && { city: locations[i].city }),
-            ...(locations[i].state && { state: locations[i].state }),
+            ...(locations[i]?.city && { city: locations[i].city }),
+            ...(locations[i]?.state && { state: locations[i].state }),
           };
         });
       });
